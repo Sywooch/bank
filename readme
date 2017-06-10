@@ -1,0 +1,4 @@
+php yii migrate
+php yii data/fill
+php yii cron/percent-accrual
+php yii cron/commission-accrual
