@@ -3,10 +3,10 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\searches\TransactionSearch;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Deposit;
 use app\models\searches\DepositSearch;
+use app\models\searches\TransactionSearch;
 
 /**
  * ReportController implements the CRUD actions for Transaction model.
@@ -41,8 +41,29 @@ class ReportController extends Controller
 
     public function actionPrognosisProfit()
     {
-        return $this->render('prognosis_profit', [
+        $searchModel = new DepositSearch();
+        $dataProvider = $searchModel->prognosis();
 
+        $total = [
+            'percent'    => 0,
+            'commission' => 0,
+            'profit'     => 0,
+        ];
+
+        if(!Yii::$app->request->isAjax) {
+            $deposits = Deposit::find()->active()->all();
+            foreach($deposits as $deposit) {
+                $prognosis = $deposit->getPrognosis();
+                $total['percent'] += $prognosis['percent'] ?? 0;
+                $total['commission'] += $prognosis['commission'] ?? 0;
+                $total['profit'] += $prognosis['profit'] ?? 0;
+            }
+        }
+
+        return $this->render('prognosis_profit', [
+            'searchModel'  => $searchModel,
+            'dataProvider' => $dataProvider,
+            'total'        => $total,
         ]);
     }
 }

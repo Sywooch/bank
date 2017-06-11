@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         } else {
             echo Html::beginTag('tr');
-            echo Html::tag('td', 'Нет данных');
+            echo Html::tag('td', 'Ничего не найдено.');
             echo Html::endTag('tr');
         }
         ?>

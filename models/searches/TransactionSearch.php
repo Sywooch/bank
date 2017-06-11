@@ -47,7 +47,7 @@ class TransactionSearch extends Transaction
                   month
                 FROM (
                   SELECT
-                    SUM(CASE WHEN trsn_type = :type_commission THEN trsn_sum * -1 ELSE trsn_sum END) as sum,
+                    SUM(CASE WHEN trsn_type = :type_commission THEN trsn_sum ELSE trsn_sum * -1 END) as sum,
                     DATE_FORMAT(trsn_created, '%m.%Y') as month
                   FROM bank_transactions
                   WHERE trsn_status = :status
@@ -56,13 +56,13 @@ class TransactionSearch extends Transaction
                 GROUP BY month";
         $binds = [
             ':type_commission' => Transaction::TYPE_COMMISSION_ACCRUAL,
-            ':status' => Transaction::STATUS_SUCCESS
+            ':status'          => Transaction::STATUS_SUCCESS,
         ];
 
-        $dataProvider = new SqlDataProvider([
-            'sql' => $sql,
-            'params' => $binds,
-            'sort' => [
+        return new SqlDataProvider([
+            'sql'        => $sql,
+            'params'     => $binds,
+            'sort'       => [
                 'attributes' => [
                     'month',
                     'sum',
@@ -72,7 +72,5 @@ class TransactionSearch extends Transaction
                 'pageSize' => Yii::$app->conf->get('defaultPageSize', 10),
             ],
         ]);
-
-        return $dataProvider;
     }
 }

@@ -41,18 +41,6 @@ AppAsset::register($this);
             ['label' => 'Прибыль/убыток', 'url' => ['/report/operation-results']],
             ['label' => 'Средняя сумма депозита', 'url' => ['/report/average-by-age']],
             ['label' => 'Прогнозируемая прибыль', 'url' => ['/report/prognosis-profit']],
-            Yii::$app->user->isGuest ? (
-            ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                .Html::beginForm(['/site/logout'], 'post')
-                .Html::submitButton(
-                    'Logout ('.Yii::$app->user->identity->username.')',
-                    ['class' => 'btn btn-link logout']
-                )
-                .Html::endForm()
-                .'</li>'
-            ),
         ],
     ]);
     NavBar::end();

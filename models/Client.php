@@ -16,6 +16,7 @@ use app\models\queries\ClientQuery;
  * @property string $clnt_sex
  * @property string $clnt_birthday
  *
+ * @property string $fullName
  * @property integer $id
  * @property Deposit[] $deposits
  */
@@ -42,6 +43,16 @@ class Client extends ActiveRecord
             [['clnt_sex'], 'string', 'max' => 2],
             [['clnt_id_code'], 'unique'],
         ];
+    }
+
+    /**
+     * Getting client full name
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return implode(' ', array_diff([$this->clnt_name, $this->clnt_surname], [null, '']));
     }
 
     /**

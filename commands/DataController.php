@@ -32,7 +32,7 @@ class DataController extends Controller
 
         $deposits = [];
         for($i = 0; $i < $count; $i++) {
-            $startSum = mt_rand(500, 500000);
+            $startSum = mt_rand(500, 200000);
             $created = DateTimeHelper::randomDate(1420070400, 1496948243);
             $mon = 60 * 60 * 24 * 30 * mt_rand(1, 60);
             $durationDeposit = strtotime($created) + $mon;
@@ -70,8 +70,8 @@ class DataController extends Controller
         for($i = 0; $i < $count; $i++) {
             $clients[] = [
                 'clnt_id_code'  => $codes[$i],
-                'clnt_name'     => 'Name '.$i,
-                'clnt_surname'  => 'Surname '.$i,
+                'clnt_name'     => 'Name_'.$i,
+                'clnt_surname'  => 'Surname_'.$i,
                 'clnt_sex'      => array_rand($sex),
                 'clnt_birthday' => date('Y-m-d', mt_rand($startTime, $endTime)),
             ];

@@ -60,16 +60,32 @@ class Transaction extends ActiveRecord
         ];
     }
 
+    /**
+     * @param int $depositId
+     *
+     * @return bool
+     */
     public static function isInterestAccrued($depositId)
     {
         return self::isAccrued($depositId, self::TYPE_PERCENT_ACCRUAL);
     }
 
+    /**
+     * @param int $depositId
+     *
+     * @return bool
+     */
     public static function isCommissionAccrued($depositId)
     {
         return self::isAccrued($depositId, self::TYPE_COMMISSION_ACCRUAL);
     }
 
+    /**
+     * @param int $depositId
+     * @param int $type
+     *
+     * @return bool
+     */
     public static function isAccrued($depositId, $type = self::TYPE_PERCENT_ACCRUAL)
     {
         $query = static::find()->byDeposit($depositId)->thisMonth()->successful();

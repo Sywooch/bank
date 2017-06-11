@@ -19,11 +19,6 @@ $this->title = 'My Yii Application';
     <div class="body-content">
 
         <div class="row">
-            <pre>
-            <?php
-
-            ?>
-                </pre>
         </div>
 
     </div>

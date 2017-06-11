@@ -6,8 +6,6 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Deposit;
-use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 
 /**
  * DepositSearch represents the model behind the search form about `app\models\Deposit`.
@@ -36,18 +34,39 @@ class DepositSearch extends Deposit
      */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
     public static function ageCategories()
     {
         return [
-            self::AGE_CATEGORY_I     => 'от 18 до 25 лет',
-            self::AGE_CATEGORY_II    => 'от 25 до 50 лет',
+            self::AGE_CATEGORY_I     => 'от 18 до 24 лет',
+            self::AGE_CATEGORY_II    => 'от 25 до 49 лет',
             self::AGE_CATEGORY_III   => 'от 50 лет',
-            self::AGE_CATEGORY_OTHER => 'Другие',
+            self::AGE_CATEGORY_OTHER => 'другие (до 18-ти)',
         ];
+    }
+
+    public function prognosis($params = [])
+    {
+        $query = Deposit::find()
+            ->joinWith(['client'])
+            ->orderBy(['dpst_created' => SORT_ASC])
+            ->active();
+
+        $dataProvider = new ActiveDataProvider([
+            'query'      => $query,
+            'pagination' => [
+                'pageSize' => Yii::$app->conf->get('defaultPageSize', 10),
+            ],
+            'sort'       => false,
+        ]);
+
+        if($this->load($params) && !$this->validate()) {
+            return $dataProvider;
+        }
+
+        return $dataProvider;
     }
 
     public function averageByAge()
@@ -78,7 +97,6 @@ class DepositSearch extends Deposit
             $result[$idxA]['sum'] += $item['average'];
             $result[$idxA]['count'] += $item['count'];
         }
-
 
         return $result;
     }

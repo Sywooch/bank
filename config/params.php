@@ -4,6 +4,7 @@ $localParams = is_file(__DIR__.'/params-local.php') ? require(__DIR__.'/params-l
 
 $params = [
     'defaultPageSize' => 10,
+
     'commissionPlans' => [
         [
             'min'     => 0,

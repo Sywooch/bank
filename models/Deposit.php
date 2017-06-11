@@ -2,9 +2,9 @@
 
 namespace app\models;
 
-use components\helpers\DateTimeHelper;
 use Yii;
 use yii\db\ActiveRecord;
+use components\helpers\DateTimeHelper;
 use app\models\queries\DepositQuery;
 use app\models\helpers\CommissionPlans;
 
@@ -33,8 +33,25 @@ class Deposit extends ActiveRecord
     const STATUS_ACTIVE = 1;
     const STATUS_CLOSED = 2;
 
+    /**
+     * @var int
+     */
+    public $numMonthsPrognosis = 3;
+
+    /**
+     * @var null|float
+     */
     private $_monthPercent = null;
+
+    /**
+     * @var null|float
+     */
     private $_monthCommission = null;
+
+    /**
+     * @var null|array
+     */
+    private $_prognosis = null;
 
     /**
      * @inheritdoc
@@ -63,6 +80,39 @@ class Deposit extends ActiveRecord
         ];
     }
 
+    /**
+     * Getting a prognosis bank profit
+     *
+     * @param bool $force
+     *
+     * @return array
+     */
+    public function getPrognosis($force = false)
+    {
+        if($force === true || $this->_prognosis === null) {
+            $percent = $commission = 0;
+            for($i = 1; $i <= $this->numMonthsPrognosis; $i++) {
+                $percent += $this->getMonthPercent(true);
+                $this->percentAccrual();
+                $commission += $this->getMonthCommission(true);
+                $this->commissionAccrual();
+            }
+
+            $this->_prognosis = [
+                'percent'    => $percent,
+                'commission' => $commission,
+                'profit'     => round($commission - $percent, 2),
+            ];
+        }
+
+        return $this->_prognosis;
+    }
+
+    /**
+     * Adding percent to current sum
+     *
+     * @return float
+     */
     public function percentAccrual()
     {
         $this->dpst_current_sum = round(($this->dpst_current_sum + $this->getMonthPercent()), 2);
@@ -70,6 +120,11 @@ class Deposit extends ActiveRecord
         return $this->dpst_current_sum;
     }
 
+    /**
+     * Accrual commission to current sum
+     *
+     * @return float
+     */
     public function commissionAccrual()
     {
 
@@ -95,7 +150,6 @@ class Deposit extends ActiveRecord
 
         return $this->_monthPercent;
     }
-
 
     /**
      * Getting a sum of commission
@@ -168,7 +222,7 @@ class Deposit extends ActiveRecord
             'dpst_id'          => 'ID',
             'dpst_client_id'   => 'Клиен',
             'dpst_status'      => 'Статус депозита',
-            'dpst_percent'     => 'Процентная ставка',
+            'dpst_percent'     => 'Процентная ставка (год)',
             'dpst_start_sum'   => 'Первоначальный взнос',
             'dpst_current_sum' => 'Текущая сумма',
             'dpst_created'     => 'Дата обновления',
